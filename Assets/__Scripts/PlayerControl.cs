@@ -5,18 +5,37 @@ namespace __Scripts
 {
     public class PlayerControl : MonoBehaviour
     {
-        public float freezeInterval = 0;
-        public float normalSpeed = 0;
-        public float flyingSpeed = 0;
-        
-        
+        [SerializeField] private float freezeInterval = 0;
+        [SerializeField] private float moveSpeed;
+        [SerializeField] private float shrinkSpeed;
+        [SerializeField] private float flyShrinkSpeed;
+
+        [SerializeField] private KeyCode leftInput;
+        [SerializeField] private KeyCode rightInput;
+
+        [SerializeField] private KeyCode upInput;
+        [SerializeField] private KeyCode downInput;
+
+        [SerializeField] private KeyCode flyModeSwitch;
+
+        private Rigidbody2D rigidbody;
+        private static float min = 0.0000001f;
+        private SpriteRenderer mSpriteRenderer;
+
+        [SerializeField] private Color normalColor;
+        [SerializeField] private Color flyColor;
+
         private CheckPoint _checkPoint;
         private Vector3 _originalScale; // to record the original scale to use in the resize process
         private State _curState; // record the state 
         private bool _isFreeze;
         private DateTime _startFreezeTime; // record the time when get the freezeCollection
-        
-            
+
+        private void Awake()
+        {
+            rigidbody = GetComponent<Rigidbody2D>();
+            mSpriteRenderer = GetComponent<SpriteRenderer>();
+        }
 
         // Start is called before the first frame update
         void Start()
@@ -31,7 +50,19 @@ namespace __Scripts
         void Update()
         {
             var trans = transform;
-            float diminishingSpeed;
+            //float diminishingSpeed;
+            ProcessInputs();
+            FlyControl();
+            SizeControl();
+            if(_curState == State.Flying)
+            {
+                mSpriteRenderer.color = flyColor;
+            }
+            else
+            {
+                mSpriteRenderer.color = normalColor;
+            }
+
             if (_isFreeze)
             {
                 TimeSpan span = DateTime.UtcNow - _startFreezeTime;
@@ -39,10 +70,10 @@ namespace __Scripts
                 {
                     _isFreeze = false;
                 }
-                else
-                {
-                    diminishingSpeed = 0;
-                }
+                //else
+                //{
+                //    diminishingSpeed = 0;
+                //}
             }
             switch (_curState)
             {
@@ -52,6 +83,12 @@ namespace __Scripts
                     trans.localScale = _checkPoint.Scale;
                     _curState = State.Normal;
                     return;
+                case State.Gone:
+                    Debug.Log("Die of shrinking");
+                    trans.position = _checkPoint.Position;
+                    trans.localScale = _originalScale;
+                    _curState = State.Normal;
+                    break;
                 case State.Normal:
                     Debug.Log("Normal Speed");
                     break;
@@ -60,6 +97,76 @@ namespace __Scripts
                     break;
                 default:
                     return;
+            }
+        }
+
+        private void ProcessInputs()
+        {
+            if (Input.GetKey(leftInput))
+            {
+                transform.Translate(Vector2.left * Time.deltaTime * moveSpeed);
+            }
+            if (Input.GetKey(rightInput))
+            {
+                transform.Translate(-1 * Vector2.left * Time.deltaTime * moveSpeed);
+            }
+
+            if (Input.GetKeyDown(flyModeSwitch))
+            {
+                if (_curState == State.Normal)
+                {
+                    _curState = State.Flying;
+                    mSpriteRenderer.color = Color.blue;
+                }
+                else if(_curState == State.Flying)
+                {
+                    _curState = State.Normal;
+                    transform.Translate(new Vector2(min, min));
+                }
+            }
+
+            if (_curState == State.Flying)
+            {
+                if (Input.GetKey(upInput))
+                {
+                    transform.Translate(Vector2.up * Time.deltaTime * moveSpeed);
+                }
+                if (Input.GetKey(downInput))
+                {
+                    transform.Translate(-1 * Vector2.up * Time.deltaTime * moveSpeed);
+                }
+            }
+        }
+
+        private void FlyControl()
+        {
+            if (_curState == State.Flying)
+            {
+                rigidbody.constraints = RigidbodyConstraints2D.FreezePosition;
+            }
+            else
+            {
+                rigidbody.constraints = RigidbodyConstraints2D.None;
+            }
+        }
+
+        private void SizeControl()
+        {
+            if (!_isFreeze)
+            {
+                if(_curState == State.Flying)
+                {
+                    transform.localScale -= (Time.deltaTime * (new Vector3(flyShrinkSpeed, flyShrinkSpeed, 0.0f)));
+                }
+                else
+                {
+                    transform.localScale -= (Time.deltaTime * (new Vector3(shrinkSpeed, shrinkSpeed, 0.0f)));
+                }
+
+                if (transform.localScale.x <= min || transform.localScale.y <= min)
+                {
+                    _curState = State.Gone;
+                }
             }
         }
 
@@ -121,6 +228,6 @@ namespace __Scripts
 
     internal enum State
     {
-        Normal, Dead, Flying
+        Normal, Dead, Flying, Gone
     }
 }
