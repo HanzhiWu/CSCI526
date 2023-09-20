@@ -146,3 +146,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e2b5c3a95f7ed54482ecae073ec6e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freezeInterval: 2
+  moveSpeed: 5
+  shrinkSpeed: 0.1
+  flyShrinkSpeed: 0.15
+  leftInput: 276
+  rightInput: 275
+  upInput: 273
+  downInput: 274
+  flyModeSwitch: 32
+  normalColor: {r: 0.9245283, g: 0.7649137, b: 0.075590305, a: 1}
+  flyColor: {r: 0.14091605, g: 0.66111445, b: 0.8962264, a: 1}
