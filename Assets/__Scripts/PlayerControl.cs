@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace __Scripts
 {
@@ -18,6 +19,7 @@ namespace __Scripts
         [SerializeField] private KeyCode downInput;
 
         [SerializeField] private KeyCode flyModeSwitch;
+        [SerializeField] GameObject allCollctables;
 
         private Rigidbody2D rigidbody;
         private static float min = 0.0000001f;
@@ -29,6 +31,8 @@ namespace __Scripts
         [SerializeField] private int goneMax;
         private int goneCount = 0;
         [SerializeField] private GameObject loseText;
+
+        [SerializeField] private List<GameObject> _collectables;
 
 
         private CheckPoint _checkPoint;
@@ -95,12 +99,14 @@ namespace __Scripts
                     trans.position = _checkPoint.Position;
                     trans.localScale = _checkPoint.Scale;
                     _curState = State.Normal;
+                    ResetAllCollectables();
                     return;
                 case State.Gone:
                     Debug.Log("Die of shrinking");
                     trans.position = _checkPoint.Position;
                     trans.localScale = _originalScale;
                     _curState = State.Normal;
+                    ResetAllCollectables();
                     break;
                 case State.Normal:
                     //Debug.Log("Normal Speed");
@@ -162,6 +168,14 @@ namespace __Scripts
             {
                 //rigidbody.constraints = RigidbodyConstraints2D.None;
                 rigidbody.gravityScale = 1.0f;
+            }
+        }
+
+        private void ResetAllCollectables()
+        {
+            foreach(var obj in _collectables)
+            {
+                obj.SetActive(true);
             }
         }
 
