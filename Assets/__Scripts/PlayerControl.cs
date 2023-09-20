@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace __Scripts
 {
@@ -24,6 +25,11 @@ namespace __Scripts
 
         [SerializeField] private Color normalColor;
         [SerializeField] private Color flyColor;
+
+        [SerializeField] private int goneMax;
+        private int goneCount = 0;
+        [SerializeField] private GameObject loseText;
+
 
         private CheckPoint _checkPoint;
         private Vector3 _originalScale; // to record the original scale to use in the resize process
@@ -54,6 +60,13 @@ namespace __Scripts
             ProcessInputs();
             FlyControl();
             SizeControl();
+
+            if(goneCount >= goneMax)
+            {
+                loseText.SetActive(true);
+                Time.timeScale = 0.0f;
+            }
+
             if(_curState == State.Flying)
             {
                 mSpriteRenderer.color = flyColor;
@@ -90,10 +103,10 @@ namespace __Scripts
                     _curState = State.Normal;
                     break;
                 case State.Normal:
-                    Debug.Log("Normal Speed");
+                    //Debug.Log("Normal Speed");
                     break;
                 case State.Flying:
-                    Debug.Log("Flying Speed");
+                    //Debug.Log("Flying Speed");
                     break;
                 default:
                     return;
@@ -166,6 +179,8 @@ namespace __Scripts
                 if (transform.localScale.x <= min || transform.localScale.y <= min)
                 {
                     _curState = State.Gone;
+                    goneCount++;
+                    Debug.Log("gone count: " + goneCount);
                 }
             }
         }
