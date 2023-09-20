@@ -155,11 +155,13 @@ namespace __Scripts
         {
             if (_curState == State.Flying)
             {
-                rigidbody.constraints = RigidbodyConstraints2D.FreezePosition;
+                //rigidbody.constraints = RigidbodyConstraints2D.FreezePosition;
+                rigidbody.gravityScale = 0.0f;
             }
             else
             {
-                rigidbody.constraints = RigidbodyConstraints2D.None;
+                //rigidbody.constraints = RigidbodyConstraints2D.None;
+                rigidbody.gravityScale = 1.0f;
             }
         }
 
@@ -169,11 +171,11 @@ namespace __Scripts
             {
                 if(_curState == State.Flying)
                 {
-                    transform.localScale -= (Time.deltaTime * (new Vector3(flyShrinkSpeed, flyShrinkSpeed, 0.0f)));
+                    transform.localScale -= (Time.deltaTime * (new Vector3(0.0f, flyShrinkSpeed, 0.0f)));
                 }
                 else
                 {
-                    transform.localScale -= (Time.deltaTime * (new Vector3(shrinkSpeed, shrinkSpeed, 0.0f)));
+                    transform.localScale -= (Time.deltaTime * (new Vector3(0.0f, shrinkSpeed, 0.0f)));
                 }
 
                 if (transform.localScale.x <= min || transform.localScale.y <= min)
