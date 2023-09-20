@@ -133,7 +133,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &8818494869018067700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,3 +157,5 @@ MonoBehaviour:
   flyModeSwitch: 32
   normalColor: {r: 0.9245283, g: 0.7649137, b: 0.075590305, a: 1}
   flyColor: {r: 0.14091605, g: 0.66111445, b: 0.8962264, a: 1}
+  goneMax: 0
+  loseText: {fileID: 0}
