@@ -27,10 +27,13 @@ namespace __Scripts
 
         [SerializeField] private Color normalColor;
         [SerializeField] private Color flyColor;
+        [SerializeField] private Color freezeColor;
 
         [SerializeField] private int goneMax;
         private int goneCount = 0;
+        private bool hasPlayerWon = false;
         [SerializeField] private GameObject loseText;
+        [SerializeField] private GameObject winText;
 
         [SerializeField] private List<GameObject> _collectables;
 
@@ -71,27 +74,35 @@ namespace __Scripts
                 Time.timeScale = 0.0f;
             }
 
-            if(_curState == State.Flying)
+            if (hasPlayerWon)
             {
-                mSpriteRenderer.color = flyColor;
-            }
-            else
-            {
-                mSpriteRenderer.color = normalColor;
+                winText.SetActive(true);
+                Time.timeScale = 0.0f;
             }
 
             if (_isFreeze)
             {
                 TimeSpan span = DateTime.UtcNow - _startFreezeTime;
+                mSpriteRenderer.color = freezeColor;
                 if (span.TotalSeconds > freezeInterval)
                 {
                     _isFreeze = false;
                 }
-                //else
-                //{
-                //    diminishingSpeed = 0;
-                //}
             }
+            else
+            {
+                if (_curState == State.Flying)
+                {
+                    mSpriteRenderer.color = flyColor;
+                }
+                else
+                {
+                    mSpriteRenderer.color = normalColor;
+                }
+            }
+            
+
+            
             switch (_curState)
             {
                 case State.Dead:
@@ -230,6 +241,11 @@ namespace __Scripts
                     _isFreeze = true;
                     _startFreezeTime = DateTime.UtcNow;
                     other.SetActive(false);
+                    break;
+                case "WinningCollectable":
+                    other.SetActive(false);
+                    hasPlayerWon = true;
+                    Debug.Log("You Win");
                     break;
                 default:
                     return;

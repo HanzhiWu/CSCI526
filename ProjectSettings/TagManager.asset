@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Bullet
   - Poison
+  - Collection-Resize
+  - CheckPoint
+  - Collection-Freeze
+  - WinningCollectable
   layers:
   - Default
   - TransparentFX
