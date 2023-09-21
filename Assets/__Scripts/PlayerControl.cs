@@ -19,23 +19,23 @@ namespace __Scripts
         [SerializeField] private KeyCode downInput;
 
         [SerializeField] private KeyCode flyModeSwitch;
-        [SerializeField] GameObject allCollctables;
 
-        private Rigidbody2D rigidbody;
-        private static float min = 0.0000001f;
-        private SpriteRenderer mSpriteRenderer;
+        private Rigidbody2D _rigidbody;
+        private static float _min = 0.0000001f;
+        private SpriteRenderer _mSpriteRenderer;
 
         [SerializeField] private Color normalColor;
         [SerializeField] private Color flyColor;
         [SerializeField] private Color freezeColor;
 
         [SerializeField] private int goneMax;
-        private int goneCount = 0;
-        private bool hasPlayerWon = false;
+        private int _goneCount = 0;
+        private bool _hasPlayerWon = false;
         [SerializeField] private GameObject loseText;
         [SerializeField] private GameObject winText;
 
-        [SerializeField] private List<GameObject> _collectables;
+        [SerializeField] private GameObject allCollectables;
+        [SerializeField] private List<GameObject> collectables;
 
 
         private CheckPoint _checkPoint;
@@ -46,8 +46,8 @@ namespace __Scripts
 
         private void Awake()
         {
-            rigidbody = GetComponent<Rigidbody2D>();
-            mSpriteRenderer = GetComponent<SpriteRenderer>();
+            _rigidbody = GetComponent<Rigidbody2D>();
+            _mSpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         // Start is called before the first frame update
@@ -57,6 +57,14 @@ namespace __Scripts
             _checkPoint = new CheckPoint(trans);
             _originalScale = trans.localScale;
             _curState = State.Normal;
+            foreach (Transform childTrans in allCollectables.transform)
+            {
+                String tag = childTrans.gameObject.tag;
+                if (tag == "Collection-Freeze" || tag == "Collection-Resize")
+                {
+                    collectables.Add(childTrans.gameObject);
+                }
+            }
         }
 
         // Update is called once per frame
@@ -68,13 +76,13 @@ namespace __Scripts
             FlyControl();
             SizeControl();
 
-            if(goneCount >= goneMax)
+            if (_goneCount >= goneMax)
             {
                 loseText.SetActive(true);
                 Time.timeScale = 0.0f;
             }
 
-            if (hasPlayerWon)
+            if (_hasPlayerWon)
             {
                 winText.SetActive(true);
                 Time.timeScale = 0.0f;
@@ -83,7 +91,7 @@ namespace __Scripts
             if (_isFreeze)
             {
                 TimeSpan span = DateTime.UtcNow - _startFreezeTime;
-                mSpriteRenderer.color = freezeColor;
+                _mSpriteRenderer.color = freezeColor;
                 if (span.TotalSeconds > freezeInterval)
                 {
                     _isFreeze = false;
@@ -93,11 +101,11 @@ namespace __Scripts
             {
                 if (_curState == State.Flying)
                 {
-                    mSpriteRenderer.color = flyColor;
+                    _mSpriteRenderer.color = flyColor;
                 }
                 else
                 {
-                    mSpriteRenderer.color = normalColor;
+                    _mSpriteRenderer.color = normalColor;
                 }
             }
             
@@ -146,12 +154,12 @@ namespace __Scripts
                 if (_curState == State.Normal)
                 {
                     _curState = State.Flying;
-                    mSpriteRenderer.color = Color.blue;
+                    _mSpriteRenderer.color = Color.blue;
                 }
-                else if(_curState == State.Flying)
+                else if (_curState == State.Flying)
                 {
                     _curState = State.Normal;
-                    transform.Translate(new Vector2(min, min));
+                    transform.Translate(new Vector2(_min, _min));
                 }
             }
 
@@ -173,18 +181,18 @@ namespace __Scripts
             if (_curState == State.Flying)
             {
                 //rigidbody.constraints = RigidbodyConstraints2D.FreezePosition;
-                rigidbody.gravityScale = 0.0f;
+                _rigidbody.gravityScale = 0.0f;
             }
             else
             {
                 //rigidbody.constraints = RigidbodyConstraints2D.None;
-                rigidbody.gravityScale = 1.0f;
+                _rigidbody.gravityScale = 1.0f;
             }
         }
 
         private void ResetAllCollectables()
         {
-            foreach(var obj in _collectables)
+            foreach (var obj in collectables)
             {
                 obj.SetActive(true);
             }
@@ -194,7 +202,7 @@ namespace __Scripts
         {
             if (!_isFreeze)
             {
-                if(_curState == State.Flying)
+                if (_curState == State.Flying)
                 {
                     transform.localScale -= (Time.deltaTime * (new Vector3(0.0f, flyShrinkSpeed, 0.0f)));
                 }
@@ -203,11 +211,11 @@ namespace __Scripts
                     transform.localScale -= (Time.deltaTime * (new Vector3(0.0f, shrinkSpeed, 0.0f)));
                 }
 
-                if (transform.localScale.x <= min || transform.localScale.y <= min)
+                if (transform.localScale.x <= _min || transform.localScale.y <= _min)
                 {
                     _curState = State.Gone;
-                    goneCount++;
-                    Debug.Log("gone count: " + goneCount);
+                    _goneCount++;
+                    Debug.Log("gone count: " + _goneCount);
                 }
             }
         }
@@ -226,29 +234,31 @@ namespace __Scripts
                     Debug.Log("Player is hit by poison");
                     _curState = State.Dead;
                     break;
-                case "CheckPoint":
-                    Debug.Log("Player reach the CheckPoint");
-                    _checkPoint.DoCheckPoint(transform);
-                    other.SetActive(false);
-                    break;
-                case "Collection-Resize":
-                    Debug.Log("Reset to Original Size");
-                    transform.localScale = _originalScale;
-                    other.SetActive(false);
-                    break;
+                default:
+                    return;
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            switch (other.gameObject.tag)
+            {
                 case "Collection-Freeze":
                     Debug.Log("Stop diminishing");
                     _isFreeze = true;
                     _startFreezeTime = DateTime.UtcNow;
-                    other.SetActive(false);
+                    other.gameObject.SetActive(false);
                     break;
-                case "WinningCollectable":
-                    other.SetActive(false);
-                    hasPlayerWon = true;
-                    Debug.Log("You Win");
+                case "Collection-Resize":
+                    Debug.Log("Reset to Original Size");
+                    transform.localScale = _originalScale;
+                    other.gameObject.SetActive(false);
                     break;
-                default:
-                    return;
+                case "CheckPoint":
+                    Debug.Log("Player reach the CheckPoint");
+                    _checkPoint.DoCheckPoint(transform);
+                    other.gameObject.SetActive(false);
+                    break;
             }
         }
     }
