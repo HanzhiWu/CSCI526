@@ -234,6 +234,11 @@ namespace __Scripts
                     Debug.Log("Player is hit by poison");
                     _curState = State.Dead;
                     break;
+                case "WinningCollectable":
+                    other.SetActive(false);
+                    _hasPlayerWon = true;
+                    Debug.Log("You Win");
+                    break;
                 default:
                     return;
             }
