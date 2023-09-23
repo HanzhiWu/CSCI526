@@ -26,7 +26,7 @@ namespace __Scripts
 
         [SerializeField] private Color normalColor;
         [SerializeField] private Color flyColor;
-        [SerializeField] private Color freezeColor;
+        [SerializeField] private GameObject freezCover;
 
         [SerializeField] private int goneMax;
         private int _goneCount = 0;
@@ -91,7 +91,7 @@ namespace __Scripts
             if (_isFreeze)
             {
                 TimeSpan span = DateTime.UtcNow - _startFreezeTime;
-                _mSpriteRenderer.color = freezeColor;
+                freezCover.SetActive(true);
                 if (span.TotalSeconds > freezeInterval)
                 {
                     _isFreeze = false;
@@ -99,6 +99,7 @@ namespace __Scripts
             }
             else
             {
+                freezCover.SetActive(false);
                 if (_curState == State.Flying)
                 {
                     _mSpriteRenderer.color = flyColor;
