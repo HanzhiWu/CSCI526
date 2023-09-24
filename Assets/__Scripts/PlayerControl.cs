@@ -99,19 +99,19 @@ namespace __Scripts
             }
             else
             {
-                freezCover.SetActive(false);
-                if (_curState == State.Flying)
-                {
-                    _mSpriteRenderer.color = flyColor;
-                }
-                else
-                {
-                    _mSpriteRenderer.color = normalColor;
-                }
+                freezCover.SetActive(false);   
             }
-            
+            if (_curState == State.Flying)
+            {
+                _mSpriteRenderer.color = flyColor;
+            }
+            else
+            {
+                _mSpriteRenderer.color = normalColor;
+            }
 
-            
+
+
             switch (_curState)
             {
                 case State.Dead:
