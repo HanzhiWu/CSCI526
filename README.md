@@ -1,5 +1,5 @@
 # CSCI526
-Game Project For CSCI526
+Game Prototype by HavvaH
 # Important Links
 [GitHub Repository](https://github.com/HanzhiWu/CSCI526)  
 [Prototype Build](https://hanzhiwu.github.io/CSCI526/WebBuild/)  
