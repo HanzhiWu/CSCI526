@@ -68,13 +68,29 @@ namespace __Scripts
         }
 
         // Update is called once per frame
+        void FixedUpdate()
+        {
+            ProcessInputs();
+        }
         void Update()
         {
             var trans = transform;
-            //float diminishingSpeed;
-            ProcessInputs();
             FlyControl();
             SizeControl();
+
+            if (Input.GetKeyDown(flyModeSwitch))
+            {
+                if (_curState == State.Normal)
+                {
+                    _curState = State.Flying;
+                    _mSpriteRenderer.color = Color.blue;
+                }
+                else if (_curState == State.Flying)
+                {
+                    _curState = State.Normal;
+                    transform.Translate(new Vector2(_min, _min));
+                }
+            }
 
             if (_goneCount >= goneMax)
             {
@@ -148,20 +164,6 @@ namespace __Scripts
             if (Input.GetKey(rightInput))
             {
                 transform.Translate(-1 * Vector2.left * Time.deltaTime * moveSpeed);
-            }
-
-            if (Input.GetKeyDown(flyModeSwitch))
-            {
-                if (_curState == State.Normal)
-                {
-                    _curState = State.Flying;
-                    _mSpriteRenderer.color = Color.blue;
-                }
-                else if (_curState == State.Flying)
-                {
-                    _curState = State.Normal;
-                    transform.Translate(new Vector2(_min, _min));
-                }
             }
 
             if (_curState == State.Flying)

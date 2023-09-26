@@ -21,7 +21,7 @@
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "buildOutputDirList",
-                "value": "{\"m_Value\":\"/Users/vibhavshashankdeshpande/Documents/GamesPrototype/CSCI526/SrinkingGameByHavvaH;/Users/vibhavshashankdeshpande/Documents/GamesPrototype/CSCI526/WebGL Builds;;;;;;;;\"}"
+                "value": "{\"m_Value\":\"/Users/vibhavshashankdeshpande/Documents/GamesPrototype/CSCI526/WebBuild;/Users/vibhavshashankdeshpande/Documents/GamesPrototype/CSCI526/SrinkingGameByHavvaH;/Users/vibhavshashankdeshpande/Documents/GamesPrototype/CSCI526/WebGL Builds;;;;;;;\"}"
             }
         ]
     }
